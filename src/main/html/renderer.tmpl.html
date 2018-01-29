@@ -1,0 +1,65 @@
+<h2>Autocompete</h2>
+
+<div class="dropdown">
+    <span class="input-label">
+        Search for Products
+    </span>
+    <input class="input-box" id="" maxlength="30" placeholder="Search a product" type="text"
+           data-bind="textInput: searchText, click : openDropDown">
+    <span class="glyphicon glyphicon-search"></span>
+
+    <div id="dropdown-content" class="dropdown-content" data-bind="click: function(data,event){event.stopPropagation();}">
+        <div data-bind="if: searchText().length >0">
+            <div style="padding:0px 20px">
+                <div data-bind="if : suggesstionList().length === 0">
+                    <div class="padding20">No Product found with matching criteria </div>
+                </div>
+                <div data-bind="foreach : suggesstionList" style="margin-top: 10px">
+                    <div style="display: flex;width:100%">
+                        <div data-bind="html : $data.key" class="dropdown-header-label" ></div>
+                    </div>
+                    <div class="bar-line"></div>
+                    <div data-bind="foreach : $data.items" >
+                        <div class="dropdown-item-row" data-bind="click:$parents[1].selectProduct">
+                            <div data-bind="html:name" ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-bind="if: searchText().length ===0">
+            <div class="padding20">
+                <div style="display: flex;width:100%">
+                    <div class="dropdown-header-label" >Recent Searches</div>
+                </div>
+                <div class="bar-line"></div>
+                <div data-bind="foreach : recentSearchArray" style="margin-top: 10px">
+                        <div class="dropdown-item-row" data-bind="text : $data, click:$parent.selectRecentProduct"></div>
+                </div>
+
+                <div data-bind="if: recentSearchArray().length ===0">
+                    Start typing to see suggestions
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div style="margin-top:50px">
+    <h2>List of all products</h2>
+    <table cellpadding="1" cellspacing="1" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: allProducts">
+            <tr style="outline: thin solid">
+                <td data-bind="text:name"></td>
+                <td data-bind="text:type"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
