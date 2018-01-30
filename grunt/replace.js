@@ -5,7 +5,7 @@ module.exports = function (grunt, options) {
 				patterns: [
 					{
 						match: /..\/..\/node_modules/g,
-						replacement: 'node_modules'
+						replacement: 'libs'
 					}
 				]
 			},

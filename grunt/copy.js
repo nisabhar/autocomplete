@@ -30,11 +30,12 @@ module.exports = function (grunt, options) {
 			files: [
 				{
 					expand: true,
-					src: ['node_modules/jquery/dist/jquery.js',
-						'node_modules/knockout/build/output/knockout-latest.debug.js',
-						'node_modules/requirejs/require.js',
-						'node_modules/underscore/underscore.js'],
-					dest: 'dist/'
+                    cwd: 'node_modules',
+					src: ['jquery/dist/jquery.js',
+						'knockout/build/output/knockout-latest.debug.js',
+						'requirejs/require.js',
+						'underscore/underscore.js'],
+					dest: 'dist/libs'
 				}
 			]
 		}

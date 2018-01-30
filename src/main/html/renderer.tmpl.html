@@ -1,14 +1,13 @@
 <h2>Autocompete</h2>
 
-<div class="dropdown">
-    <span class="input-label">
-        Search for Products
-    </span>
-    <input class="input-box" id="" maxlength="30" placeholder="Search a product" type="text"
-           data-bind="textInput: searchText, click : openDropDown">
-    <span class="glyphicon glyphicon-search"></span>
+<div class="dropdown" style="">
+    <div class="input-label" data-bind="text:label"></div>
+    <div style="margin-left:10px;flex: 1">
+        <input class="input-box" id="" maxlength="30" placeholder="Search a product" type="text"
+            data-bind="textInput: searchText, click : openDropDown">
 
-    <div id="dropdown-content" class="dropdown-content" data-bind="click: function(data,event){event.stopPropagation();}">
+        <div id="dropdown-content" tabindex="0" class="dropdown-content"
+             data-bind="click: function(data,event){event.stopPropagation();}">
         <div data-bind="if: searchText().length >0">
             <div style="padding:0px 20px">
                 <div data-bind="if : suggesstionList().length === 0">
@@ -20,7 +19,7 @@
                     </div>
                     <div class="bar-line"></div>
                     <div data-bind="foreach : $data.items" >
-                        <div class="dropdown-item-row" data-bind="click:$parents[1].selectProduct">
+                        <div class="dropdown-item-row" data-bind="click:$parents[1].selectProduct" tabindex="-1">
                             <div data-bind="html:name" ></div>
                         </div>
                     </div>
@@ -33,17 +32,17 @@
                     <div class="dropdown-header-label" >Recent Searches</div>
                 </div>
                 <div class="bar-line"></div>
-                <div data-bind="foreach : recentSearchArray" style="margin-top: 10px">
+                <div data-bind="foreach : recentSearchArray" style="margin-top: 10px" tabindex="-1">
                         <div class="dropdown-item-row" data-bind="text : $data, click:$parent.selectRecentProduct"></div>
                 </div>
 
                 <div data-bind="if: recentSearchArray().length ===0">
-                    Start typing to see suggestions
+                    No recent Searches. Start typing to see suggestions
                 </div>
             </div>
         </div>
     </div>
-
+    </div>
 </div>
 
 <div style="margin-top:50px">

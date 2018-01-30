@@ -1,6 +1,10 @@
 // import products from '../../data/products.json';
 import $ from '../../../../node_modules/jquery/dist/jquery.js';
 
+/**
+ * A signlton for Data store
+ * @type {{getInstance}}
+ */
 var DataService = (function(){
 
     var instance ;
@@ -11,10 +15,9 @@ var DataService = (function(){
             allProducts : null
         };
 
-
         return {
-           getProducts :  function (){
 
+           getProducts :  function (){
                let result = new Promise((resolve,reject) =>{
                    if (_state && _state.allProducts){
                        resolve(_state.allProducts);
@@ -47,7 +50,6 @@ var DataService = (function(){
             },
 
             getRecentSearches : function (){
-
                 let recentSearches = localStorage.getItem('RECENT_SEARCHES');
                 if(recentSearches){
                     recentSearches = JSON.parse(recentSearches);

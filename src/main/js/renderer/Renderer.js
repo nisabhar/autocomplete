@@ -7,8 +7,8 @@ import Product from '../model/Product.js';
 
 export class Renderer {
 
-	constructor({frame = '', frameChangedEvent}, elm){
-        var self = this;
+	constructor({label = 'Search'}, elm){
+        let self = this;
 
         //store the Data service, to get the actual data
         this.service = DataService.getInstance();
@@ -19,12 +19,15 @@ export class Renderer {
         //for storing current search text
         this.searchText = ko.observable('');
 
+        this.label = ko.observable(label);
+
+        //list of all recent searches
         this.recentSearchArray = ko.observableArray([]);
 
         //adding debounce , so that we dont do frequent search
         this.searchTextDebounced =
             ko.pureComputed(this.searchText).extend({
-                rateLimit: { method: "notifyWhenChangesStop", timeout: 100 }
+                rateLimit: { method: "notifyWhenChangesStop", timeout: 400 }
             });
 
         //subscribe to the search text change
@@ -33,19 +36,26 @@ export class Renderer {
                 self.performDebouncedSearch();
             });
 
-        this.productType = new Set();
-
+        //for storing list of suggestions
         this.suggesstionList= ko.observableArray([]);
 
+        //create the product list
         this.populateProductList();
+
+        //set events for opening opopup
         this.setupEvents ();
 
-        //binding external events
+        //binding functions to this
         this.selectProduct = this.selectProduct.bind(this);
         this.openDropDown = this.openDropDown.bind(this);
         this.selectRecentProduct = this.selectRecentProduct.bind(this);
 	}
 
+    /**
+     * labels for Types
+     * @param type
+     * @returns {*}
+     */
      typeMap(type) {
         let map = {
             CREDIT_CARD : 'Credit Card',
@@ -58,7 +68,9 @@ export class Renderer {
         return map[type];
     }
 
-
+    /**
+     * to hide dropdown when user clicks anywhere else
+     */
 	setupEvents () {
         // Close the dropdown menu if the user clicks outside of it
         window.onclick = function(event) {
@@ -69,6 +81,9 @@ export class Renderer {
         }
     }
 
+    /**
+     * to create the list of products
+     */
 	populateProductList(){
 	    let self =this;
 	    this.service.getProducts().then(function (products) {
@@ -76,8 +91,6 @@ export class Renderer {
             products.forEach(function(item){
                 let product= new Product(item);
                 _products.push(product);
-                //add in set for product Type
-                self.productType.add(item.type);
             });
 
             self.allProducts(_products);
@@ -86,8 +99,11 @@ export class Renderer {
         });
     }
 
+    /**
+     * to perform the search for typed key
+     */
     performDebouncedSearch(){
-	    let self = this;
+
         let filter = this.searchText().toString();
         let filterLen = filter.length;
 
@@ -95,13 +111,11 @@ export class Renderer {
             return;
         }
 
+        //all products
         const _products = this.allProducts();
 
-        let _prunedList = [];
-
-        let productTypeList = {
-
-        }
+        // products grouped based on Type
+        let productTypeList = {};
 
         for(let i =0 ; i< _products.length;i++){
             let item = _products[i];
@@ -111,12 +125,11 @@ export class Renderer {
                 let text = item.name.substr(0,matchIndex) +
                     '<b>' + item.name.substr(matchIndex,filterLen) +
                     '</b>' + item.name.substr(matchIndex + filterLen);
-                    //+ ' in <i>' + self.typeMap(item.type) +'</i>';
+
 
                 let prod = {
                     name: text,
                     original : item.name,
-                    // type : self.typeMap(item.type)
                 };
 
                 if(!productTypeList.hasOwnProperty(item.type)){
@@ -127,10 +140,12 @@ export class Renderer {
 
         }
 
+        //final suggestions
+        let _prunedList = [];
         for(let item in productTypeList){
             if(productTypeList.hasOwnProperty(item)){
                 _prunedList.push({
-                    key :  'Institutes of type <b>' +self.typeMap(item) + ' </b>',
+                    key :  'Institutes of type <b>' +this.typeMap(item) + ' </b>',
                     items : productTypeList[item].items.slice(0 , Math.min(productTypeList[item].items.length,3))
                 })
             }
@@ -139,7 +154,12 @@ export class Renderer {
         this.suggesstionList(_prunedList);
     }
 
-    //knocout event
+
+    /**
+     * knockout click event listner , to open dropdown
+     * @param data
+     * @param event
+     */
     openDropDown(data,event){
         let recentSearches = this.service.getRecentSearches();
 
@@ -158,15 +178,29 @@ export class Renderer {
         event.stopPropagation();
     }
 
-    //knocout event
+    /**
+     * knockout click event listner , to select a product
+     * @param data
+     * @param event
+     */
     selectProduct(data,event){
         this._selectProduct(data.original);
     }
 
+    /**
+     * knockout click event listner , to select a reent product
+     * @param data
+     * @param event
+     */
     selectRecentProduct(data,event){
         this._selectProduct(data);
     }
 
+    /**
+     * internal method to store a product
+     * @param product
+     * @private
+     */
     _selectProduct(product){
         $('#dropdown-content').hide();
         this.searchText(product);
