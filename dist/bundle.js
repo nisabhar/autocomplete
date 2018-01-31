@@ -16234,7 +16234,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Renderer = exports.Renderer = function () {
     function Renderer(_ref, elm) {
         var _ref$label = _ref.label,
-            label = _ref$label === undefined ? 'Search' : _ref$label;
+            label = _ref$label === undefined ? 'Search' : _ref$label,
+            _ref$maxSuggestion = _ref.maxSuggestion,
+            maxSuggestion = _ref$maxSuggestion === undefined ? 3 : _ref$maxSuggestion;
 
         _classCallCheck(this, Renderer);
 
@@ -16249,7 +16251,10 @@ var Renderer = exports.Renderer = function () {
         //for storing current search text
         this.searchText = _knockoutLatestDebug2.default.observable('');
 
-        this.label = _knockoutLatestDebug2.default.observable(label);
+        //parameters
+        this.label = label;
+        this.maxSuggestion = maxSuggestion;
+        this.element = elm;
 
         //list of all recent searches
         this.recentSearchArray = _knockoutLatestDebug2.default.observableArray([]);
@@ -16381,7 +16386,7 @@ var Renderer = exports.Renderer = function () {
                 if (productTypeList.hasOwnProperty(_item)) {
                     _prunedList.push({
                         key: 'Institutes of type <b>' + this.typeMap(_item) + ' </b>',
-                        items: productTypeList[_item].items.slice(0, Math.min(productTypeList[_item].items.length, 3))
+                        items: productTypeList[_item].items.slice(0, Math.min(productTypeList[_item].items.length, this.maxSuggestion))
                     });
                 }
             }
@@ -16451,6 +16456,16 @@ var Renderer = exports.Renderer = function () {
             (0, _jquery2.default)('#dropdown-content').hide();
             this.searchText(product);
             this.service.addRecentSearches(product);
+
+            //fir the event for consumer
+            var eventParams = {
+                'bubbles': true,
+                'cancelable': false,
+                'detail': {
+                    product: product
+                }
+            };
+            this.element.dispatchEvent(new CustomEvent('selected', eventParams));
         }
     }]);
 

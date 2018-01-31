@@ -7,7 +7,7 @@ import Product from '../model/Product.js';
 
 export class Renderer {
 
-	constructor({label = 'Search'}, elm){
+	constructor({label = 'Search', maxSuggestion = 3}, elm){
         let self = this;
 
         //store the Data service, to get the actual data
@@ -19,7 +19,10 @@ export class Renderer {
         //for storing current search text
         this.searchText = ko.observable('');
 
-        this.label = ko.observable(label);
+        //parameters
+        this.label = label;
+        this.maxSuggestion = maxSuggestion;
+        this.element = elm;
 
         //list of all recent searches
         this.recentSearchArray = ko.observableArray([]);
@@ -146,7 +149,7 @@ export class Renderer {
             if(productTypeList.hasOwnProperty(item)){
                 _prunedList.push({
                     key :  'Institutes of type <b>' +this.typeMap(item) + ' </b>',
-                    items : productTypeList[item].items.slice(0 , Math.min(productTypeList[item].items.length,3))
+                    items : productTypeList[item].items.slice(0 , Math.min(productTypeList[item].items.length,this.maxSuggestion))
                 })
             }
         }
@@ -205,6 +208,16 @@ export class Renderer {
         $('#dropdown-content').hide();
         this.searchText(product);
         this.service.addRecentSearches(product);
+
+        //fir the event for consumer
+        var eventParams = {
+            'bubbles': true,
+            'cancelable': false,
+            'detail': {
+                product : product
+            }
+        };
+        this.element.dispatchEvent(new CustomEvent('selected', eventParams));
     }
 }
 
