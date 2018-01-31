@@ -33,7 +33,7 @@ ASSUMPTIONS
 
 CODE LAYOUT
 --------------
-As we just have componnet do didnt create seperate directory for it, and didnt create a namespace
+As we just have one component so didn't create separate directory for it, and didn't create a namespace
 - All component code under src/main/js
 - Renderer.js is the VM and contains the UI binding 
 - All Html is in renderer.tmpl.html
